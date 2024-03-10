@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learnova</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #ffe6e6;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #ff6666;
+            font-size: 3em;
+            animation: bounce 1s infinite alternate;
+        }
+
+        p {
+            color: #ff9999;
+            font-size: 1.5em;
+            margin-bottom: 30px;
+        }
+
+        a {
+            display: inline-block;
+            margin: 20px;
+            padding: 15px 30px;
+            background-color: #66ccff;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 1.2em;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            animation: bounce 1s infinite alternate;
+        }
+
+        a:hover {
+            background-color: #0077cc;
+            transform: scale(1.1);
+        }
+
+        @keyframes bounce {
+            0% {
+                transform: translateY(0);
+            }
+            100% {
+                transform: translateY(-10px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to Learnova</h1>
+    <p>Helping visually impaired students learn with exciting audio content.</p>
+    <a href="/upload">Upload Teaching Content</a>
+    <a href="/learn">Start Learning</a>
+</body>
+</html>

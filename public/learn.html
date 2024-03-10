@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/say.js/1.4.2/say.min.js"></script>
+    <script src="https://cdn.rawgit.com/muaz-khan/RecordRTC/master/RecordRTC.js"></script>
+    <style>
+            body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #ffe6e6;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #ff6666;
+            font-size: 3em;
+            animation: bounce 1s infinite alternate;
+        }
+
+        p {
+            color: #ff9999;
+            font-size: 1.5em;
+            margin-bottom: 30px;
+        }
+
+        h1, h2 {
+            text-align: center;
+        }
+        #contentList {
+            list-style-type: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+        .content-item {
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-block;
+        }
+        .content-item:hover {
+            background-color: #f5f5f5;
+        }
+        #audioPlayerContainer {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        #audioPlayer {
+            width: 80%;
+        }
+        .chat-container {
+            text-align: center;
+        }
+        #chatBox {
+            width: 60%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        #recordButton, #sendButton {
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #008CBA;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .icon {
+            margin-right: 5px;
+        }
+        a {
+            display: block;
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #0077cc;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+            width: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Learn</h1>
+
+    <h2>Uploaded Content</h2>
+    <ul id="contentList"></ul>
+
+    <div id="audioPlayerContainer">
+        <audio id="audioPlayer" controls></audio>
+    </div>
+
+    <div class="chat-container">
+        <textarea id="chatBox" placeholder="Type your message..." rows="4"></textarea>
+        <button id="recordButton">
+            <span class="icon">🎤</span> Record Audio
+        </button>
+        <button id="sendButton">
+            <span class="icon">✉️</span> Send
+        </button>
+    </div>
+
+    <div>
+        <a href="/">Go Home</a>
+
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            // Fetch and display uploaded content
+            $.get('/api/content', function (data) {
+                const contentList = $('#contentList');
+                data.forEach(function (item) {
+                    const listItem = $('<li class="content-item"></li>');
+                    listItem.text(item.title);
+                    listItem.data('audioSrc', item.audioSrc);
+                    contentList.append(listItem);
+                });
+
+                // Add click event listener to content items
+                $('.content-item').on('click', function () {
+                    const audioSrc = $(this).data('audioSrc');
+                    playAudio(audioSrc);
+                });
+            });
+
+            // Function to play audio
+            function playAudio(audioSrc) {
+                const audioPlayer = $('#audioPlayer');
+                audioPlayer.attr('src', audioSrc);
+                audioPlayer[0].play();
+            }
+
+            // Event listener for the Record Audio button
+            $('#recordButton').on('click', function () {
+                // Record audio using RecordRTC (basic example)
+                const mediaConstraints = { audio: true };
+                navigator.mediaDevices.getUserMedia(mediaConstraints).then(function (stream) {
+                    const recorder = RecordRTC(stream, { type: 'audio' });
+                    recorder.startRecording();
+
+                    // Stop recording after 5 seconds (adjust as needed)
+                    setTimeout(function () {
+                        recorder.stopRecording(function (audioURL) {
+                            // Play the recorded audio
+                            playAudio(audioURL);
+                            // Release resources
+                            recorder.release();
+                        });
+                    }, 5000);
+                }).catch(function (error) {
+                    console.error('Error recording audio:', error);
+                });
+            });
+
+            // Event listener for the Send button
+            $('#sendButton').on('click', function () {
+                const chatBox = $('#chatBox');
+                const message = chatBox.val().trim();
+
+                if (message !== '') {
+                    // Convert text to audio using Say.js
+                    say.export(message, 'Microsoft David Desktop - English (United States)', 1.0, 'output.mp3', function (err) {
+                        if (err) {
+                            console.error('Error converting text to audio:', err);
+                        } else {
+                            // Play the generated audio
+                            playAudio('/output.mp3');
+                        }
+                    });
+
+                    // Send message to ChatGPT (implement your logic here)
+                    // ...
+
+                    // Clear the chat box
+                    chatBox.val('');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
